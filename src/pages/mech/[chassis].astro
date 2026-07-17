@@ -22,7 +22,9 @@ export async function getStaticPaths() {
 const { chassis } = Astro.params
 const { short, weightclass, weight, DLC } = Astro.props
 
-const MDAfiles = await Astro.glob('./../../data/MDA/**/*MDA.json')
+const MDAfiles = Object.values(
+	import.meta.glob('../../data/MDA/**/*MDA.json', { eager: true })
+).map((module) => (module as { default: MDA }).default)
 const selectedMDA = MDAfiles.filter(
 	(mda) =>
 		mda.chassisFullName.replaceAll(' ', '').toLowerCase() ===
@@ -95,7 +97,7 @@ function linkFormatSarna(str: string): string {
 						{e.mda.bIsHeroMech && <p class="text-xl">Hero!</p>}
 
 						<p>
-							Speed:
+							Speed:{' '}
 							{
 								//! Speed equation
 								Math.floor(
@@ -103,10 +105,10 @@ function linkFormatSarna(str: string): string {
 										16.2
 								)
 							}
-							kp/h
+							{' '}kp/h
 						</p>
 						<p>
-							{e.mda.bXLEngine ? <>XL</> : <>Standard</>} engine
+							{e.mda.bXLEngine ? <>XL</> : <>Standard</>} engine{' '}
 							{e.mda.engineRating}
 						</p>
 						{e.mda.equipmentAllocation.allowedJumpJetType.tagName ===
@@ -118,7 +120,7 @@ function linkFormatSarna(str: string): string {
 						e.mda.mechDataStats.mechImportData.baseMechInformation
 							.structureType === 'endosteeltype' ? (
 							<p>
-								Weight Saving:
+								Weight Saving:{' '}
 								{e.mda.mechDataStats.mechImportData.baseMechInformation
 									.armorType === 'ferrofibrousarmortype' &&
 									'Ferro-fibrous armor, '}
@@ -135,10 +137,10 @@ function linkFormatSarna(str: string): string {
 							)
 						)}
 						<p>
-							Free tonnage (no armor):
+							Free tonnage (no armor):{' '}
 							{e.mda.mechDataStats.baseStats.tons -
 								e.mda.mechDataStats.baseStats.baseTons}
-							tons
+							{' '}tons
 						</p>
 						{e.mda.equipmentAllocation.slotData.map((e) => {
 							return (
@@ -146,7 +148,7 @@ function linkFormatSarna(str: string): string {
 									{e.slotTypeDataAssetId.id ===
 										'MWSlotTypeDataAsset:EngineHeatsink_SlotType' && (
 										<p>
-											Engine hs:
+											Engine hs:{' '}
 											{e.slotCounts.CenterTorso}
 										</p>
 									)}
@@ -163,7 +165,7 @@ function linkFormatSarna(str: string): string {
 							i.includes('antimissilesystem')
 						).length !== 0 && (
 							<p>
-								AMS:
+								AMS:{' '}
 								{
 									e.mda.selectedWeaponHardPoints.filter((i) =>
 										i.includes('antimissilesystem')
